@@ -3,7 +3,7 @@ import { FormControl, NgForm } from '@angular/forms';
 import { Employee } from '../employee.model';
 import { EmployeeService } from '../employee.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-employee',
@@ -12,23 +12,30 @@ import { Router } from '@angular/router';
 })
 export class EmployeeComponent implements OnInit {
 
-  employee: Employee = {
-    employeeId: 0,
-    employeeName: '',
-    employeeContactNumber: '',
-    employeeAddress: '',
-    employeeGender: '',
-    employeeDepartment: '',
-    employeeSkills: ''
-  }
+  isCreateEmployee: boolean = true;
+
+  employee: any;
+
 
   skills: string[] = []
 
-  constructor(private employeeService: EmployeeService, private router: Router) {
+  constructor(private employeeService: EmployeeService, private router: Router, private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit(): void {
+    this.employee = this.activatedRoute.snapshot.data['empoyee']
 
+    console.log(this.employee)
+
+    if (this.employee && this.employee.employeeId) {
+      this.isCreateEmployee = false;
+      if (this.employee.employeeSkills != '') {
+        this.skills = [];
+        this.skills = this.employee.employeeSkills.split(',')
+      }
+    } else {
+      this.isCreateEmployee = true;
+    }
   }
 
   disableSelect = new FormControl(false);
@@ -60,18 +67,33 @@ export class EmployeeComponent implements OnInit {
   }
 
   saveEmployee(employeeForm: NgForm): void {
-    this.employeeService.saveEmployee(this.employee).subscribe(
-      {
-        next: (res: Employee) => {
-          console.log(res);
-          employeeForm.reset();
-          this.employee.employeeGender ='';
-          this.router.navigate(['/employee-list'])
-        },
-        error: (err: HttpErrorResponse) => {
-          console.log(err);
+
+    if (this.isCreateEmployee) {
+      this.employeeService.saveEmployee(this.employee).subscribe(
+        {
+          next: (res: Employee) => {
+            console.log(res);
+            employeeForm.reset();
+            this.employee.employeeGender = '';
+            this.router.navigate(['/employee-list'])
+          },
+          error: (err: HttpErrorResponse) => {
+            console.log(err);
+          }
         }
-      }
-    );
-}
+      );
+    } else {
+      this.employeeService.updateEmployee(this.employee).subscribe(
+        {
+          next: (res: Employee) => {
+            this.router.navigate(['/employee-list']);
+          }, error: (err: HttpErrorResponse) => {
+            console.log(err)
+          }
+        }
+      )
+    }
+
+
+  }
 }

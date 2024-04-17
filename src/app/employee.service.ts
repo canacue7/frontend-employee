@@ -24,4 +24,12 @@ export class EmployeeService {
   public deleteEmployee(Id: number) {
     return this.httpClient.delete(`${this.api}/delete/employee/${Id}`)
   }
+
+  public getEmployee(Id: number ) {
+    return this.httpClient.get<Employee>(`${this.api}/get/employee/${Id}`)
+  }
+
+  public updateEmployee(employee: Employee) {
+    return this.httpClient.put<Employee>(`${this.api}/update/employee`, employee)
+  }
 }
