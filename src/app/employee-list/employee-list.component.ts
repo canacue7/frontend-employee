@@ -11,7 +11,8 @@ import { Employee } from '../employee.model';
 export class EmployeeListComponent implements OnInit {
 
   dataSource: Employee[] = [];
-  displayedColumns: string[] = ['employeeId', 'employeeName', 'employeeContactNumber', 'employeeAddress', 'employeeDepartment', 'employeeGender', 'employeeSkills'];
+  displayedColumns: string[] = ['employeeId', 'employeeName', 'employeeContactNumber', 'employeeAddress', 
+  'employeeDepartment', 'employeeGender', 'employeeSkills', 'delete'];
 
 
   constructor(private employeeService: EmployeeService){
@@ -34,5 +35,17 @@ export class EmployeeListComponent implements OnInit {
         }
       }
     );
+  }
+
+  deleteEmployee(Id:number):void {
+    console.log(Id)
+    this.employeeService.deleteEmployee(Id).subscribe({
+      next: (res) =>{
+        console.log(res)
+        this.getEmployeeList()
+      },error: (err: HttpErrorResponse) => {
+        console.log(err);
+      }
+    })
   }
 }

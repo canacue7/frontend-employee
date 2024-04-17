@@ -20,4 +20,8 @@ export class EmployeeService {
   public getEmployees(): Observable<Employee[]>{
     return this.httpClient.get<Employee[]>(`${this.api}/get/employee`)
   }
+
+  public deleteEmployee(Id: number) {
+    return this.httpClient.delete(`${this.api}/delete/employee/${Id}`)
+  }
 }
